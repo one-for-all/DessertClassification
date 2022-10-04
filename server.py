@@ -10,7 +10,6 @@ from class_predictions import class_predictions
 import numpy as np
 import uvicorn
 
-
 # Dessert Classification Model
 model = load_model("food-vision-model.h5")
 
@@ -25,23 +24,19 @@ def home():
 
 @app.post("/predict")
 def predict(image_link: str):
-    # filename = image_file.filename
-    # fileExtension = filename.split(".")[-1].lower()
-    # if not fileExtension in ["jpg", "jpeg", "png"]:
-    #     raise HTTPException(status_code=415, detail=f"file extension ({fileExtension}) not supported.")
-    #
-    # image_stream = io.BytesIO(image_file.file.read())
-    # image_stream.seek(0)
-    # file_bytes = np.asarray(bytearray(image_stream.read()), dtype=np.uint8)
-    # print(file_bytes)
-    # image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    # Check image extension
+    file_extension = image_link.split(".")[-1].lower()
+    if file_extension not in ["jpg", "jpeg", "png"]:
+        raise HTTPException(status_code=415, detail=f"file extension ({file_extension}) not supported.")
 
+    # Read image
     image = img_to_array(load_img(get_file(origin=image_link), target_size=(224, 224)))
 
+    # Perform classification
     probs = softmax(model.predict(expand_dims(image, 0))[0])
-    print(probs)
     prediction = class_predictions[np.argmax(probs)]
 
+    # Output result
     return {"prediction": prediction}
 
 
