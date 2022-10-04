@@ -1,7 +1,8 @@
 # pycharm
-.idea
+.idea/
 
 # virtualenv
 venv
 
-
+# Cache
+__pycache__/
